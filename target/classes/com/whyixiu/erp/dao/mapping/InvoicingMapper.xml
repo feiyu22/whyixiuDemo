@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.whyixiu.erp.dao.InvoicingMapper" >
+  <resultMap id="BaseResultMap" type="com.whyixiu.erp.model.Invoicing" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="product_id" property="productId" jdbcType="INTEGER" />
+    <result column="product_name" property="productName" jdbcType="VARCHAR" />
+    <result column="product_code" property="productCode" jdbcType="VARCHAR" />
+    <result column="company" property="company" jdbcType="VARCHAR" />
+    <result column="num" property="num" jdbcType="INTEGER" />
+    <result column="price" property="price" jdbcType="DOUBLE" />
+    <result column="total_price" property="totalPrice" jdbcType="DOUBLE" />
+    <result column="saler" property="saler" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="create_date" property="createDate" jdbcType="TIMESTAMP" />
+    <result column="user_id" property="userId" jdbcType="INTEGER" />
+    <result column="is_ship" property="isShip" jdbcType="INTEGER" />
+    <result column="is_pay" property="isPay" jdbcType="INTEGER" />
+    <result column="update_date" property="updateDate" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, product_id,product_name,product_code, company, num, price, total_price, saler, status, create_date, user_id,
+    is_ship,is_pay,update_date
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from invoicing
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  
+  
+  <select id="selectByUser" resultMap="BaseResultMap" parameterType="com.whyixiu.erp.model.vo.InvoicingVo" >
+    select 
+    <include refid="Base_Column_List" />
+    from invoicing
+    where  status &lt;&gt; '0' and user_id = #{invoicing.userId} 
+    <if test="beginDate != null" >
+   		AND DATE_FORMAT(create_date , '%Y-%m-%d') &gt;= #{beginDate} 
+    </if>
+    <if test="endDate != null" >
+       AND DATE_FORMAT(create_date , '%Y-%m-%d') &lt;= #{endDate} 
+    </if>
+    order by create_date desc;
+  </select>
+  
+  <select id="selectByType" resultMap="BaseResultMap" parameterType="com.whyixiu.erp.model.vo.InvoicingVo">
+	  SELECT id,product_id,product_name,
+		product_code,company,SUM(num) AS num,
+		price,SUM(num)*price as total_price,saler,STATUS,
+		create_date,user_id
+	FROM
+		invoicing
+	WHERE status &lt;&gt; '0' and user_id = #{invoicing.userId}
+	<if test="beginDate != null" >
+   		AND DATE_FORMAT(create_date , '%Y-%m-%d') &gt;= #{beginDate} 
+    </if>
+    <if test="endDate != null" >
+       AND DATE_FORMAT(create_date , '%Y-%m-%d') &lt;= #{endDate} 
+    </if>
+	GROUP BY
+		product_id
+  </select>
+  
+  
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from invoicing
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  
+  <insert id="insertSelective" parameterType="com.whyixiu.erp.model.Invoicing" useGeneratedKeys="true" keyProperty="id">
+  
+    insert into invoicing
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="productId != null" >
+        product_id,
+      </if>
+      <if test="productName != null" >
+        product_name,
+      </if>
+      <if test="productCode != null" >
+        product_code,
+      </if>
+      <if test="company != null" >
+        company,
+      </if>
+      <if test="num != null" >
+        num,
+      </if>
+      <if test="price != null" >
+        price,
+      </if>
+      <if test="totalPrice != null" >
+        total_price,
+      </if>
+      <if test="saler != null" >
+        saler,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="createDate != null" >
+        create_date,
+      </if>
+      <if test="userId != null" >
+        user_id,
+      </if>
+      <if test="isShip != null" >
+        is_ship,
+      </if>
+      <if test="isPay != null" >
+        is_pay,
+      </if>
+      <if test="updateDate != null" >
+        update_date
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="productId != null" >
+        #{productId,jdbcType=INTEGER},
+      </if>
+      <if test="productName != null" >
+        #{productName,jdbcType=VARCHAR},
+      </if>
+      <if test="productCode != null" >
+        #{productCode,jdbcType=VARCHAR},
+      </if>
+      <if test="company != null" >
+        #{company,jdbcType=VARCHAR},
+      </if>
+      <if test="num != null" >
+        #{num,jdbcType=INTEGER},
+      </if>
+      <if test="price != null" >
+        #{price,jdbcType=DOUBLE},
+      </if>
+      <if test="totalPrice != null" >
+        #{totalPrice,jdbcType=DOUBLE},
+      </if>
+      <if test="saler != null" >
+        #{saler,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=INTEGER},
+      </if>
+      <if test="createDate != null" >
+        #{createDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="userId != null" >
+        #{userId,jdbcType=INTEGER},
+      </if>
+      
+      <if test="isShip != null" >
+        #{isShip,jdbcType=INTEGER},
+      </if>
+      <if test="isPay != null" >
+        #{isPay,jdbcType=INTEGER},
+      </if>
+      <if test="updateDate != null" >
+        #{updateDate,jdbcType=TIMESTAMP}
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.whyixiu.erp.model.Invoicing" >
+    update invoicing
+    <set >
+      <if test="productId != null" >
+        product_id = #{productId,jdbcType=INTEGER},
+      </if>
+      <if test="productName != null" >
+        product_name = #{productName,jdbcType=VARCHAR},
+      </if>
+      <if test="productCode != null" >
+        product_code = #{productCode,jdbcType=VARCHAR},
+      </if>
+      <if test="company != null" >
+        company = #{company,jdbcType=VARCHAR},
+      </if>
+      <if test="num != null" >
+        num = #{num,jdbcType=INTEGER},
+      </if>
+      <if test="price != null" >
+        price = #{price,jdbcType=DOUBLE},
+      </if>
+      <if test="totalPrice != null" >
+        total_price = #{totalPrice,jdbcType=DOUBLE},
+      </if>
+      <if test="saler != null" >
+        saler = #{saler,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="createDate != null" >
+        create_date = #{createDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="userId != null" >
+        user_id = #{userId,jdbcType=INTEGER},
+      </if>
+      
+      <if test="isShip != null" >
+        is_ship = #{isShip,jdbcType=INTEGER},
+      </if>
+      <if test="isPay != null" >
+        is_pay = #{isPay,jdbcType=INTEGER},
+      </if>
+      <if test="updateDate != null" >
+       update_date =  #{updateDate,jdbcType=TIMESTAMP}
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>
